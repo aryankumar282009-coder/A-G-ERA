@@ -1,236 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&G ERA - Owner Panel & Store</title>
-    
-    <style>
-        /* 1. Design (CSS) */
-        :root {
-            --bg-color: #f5f5f5;
-            --nav-color: #000;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A&G ERA</title>
 
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            background-color: var(--bg-color);
-            transition: 0.3s;
-        }
-
-        header {
-            background: var(--nav-color);
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            background: #1a1a1a;
-            padding: 15px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .product-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 40px;
-        }
-        .product-card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .product-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        /* --- Naya Description Note Style --- */
-        .description-note {
-            background: #fff;
-            padding: 40px 20px;
-            text-align: center;
-            margin-top: 50px;
-            border-top: 2px solid #000;
-        }
-        .description-note p {
-            font-size: 1.2rem;
-            color: #333;
-            font-style: italic;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-        #owner-panel {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border: 2px solid #000;
-            z-index: 1000;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        input, select { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
-        .post-btn { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; }
-        
-        .admin-trigger {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #000;
-            color: white;
-            padding: 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-            font-size: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-    </style>
+<style>
+:root {
+    --bg-color: #f5f5f5;
+}
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg-color);
+}
+header {
+    background: black;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    background: #1a1a1a;
+    padding: 15px;
+}
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 20px;
+    padding: 40px;
+}
+.product-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+.description-note {
+    text-align: center;
+    padding: 30px;
+    border-top: 2px solid black;
+}
+.admin-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: black;
+    color: white;
+    border-radius: 50%;
+    padding: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+#owner-panel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: white;
+    padding: 25px;
+    border: 2px solid black;
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+}
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+}
+.post-btn {
+    background: green;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+</style>
 </head>
-<body>
 
-    <header>
-        <h1>A&G ERA</h1>
-    </header>
+<body onload="loadProducts()">
 
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Men's</a>
-        <a href="#">Women's</a>
-    </nav>
+<header>
+<h1>A&G ERA</h1>
+</header>
 
-    <div class="product-container" id="productList">
+<nav>
+<a href="#">Home</a>
+<a href="#">Men's</a>
+<a href="#">Women's</a>
+</nav>
+
+<div class="product-container" id="productList"></div>
+
+<div class="description-note">
+<p>"You will find the best clothes on our website."</p>
+</div>
+
+<button class="admin-trigger" onclick="login()">🔒</button>
+
+<div id="owner-panel">
+<h2>Owner Panel</h2>
+
+<label>Category</label>
+<select id="category" onchange="toggleSize()">
+    <option value="clothes">Clothes 👕</option>
+    <option value="accessories">Accessories ⌚</option>
+</select>
+
+<input type="text" id="name" placeholder="Product Name">
+<input type="number" id="price" placeholder="Price ₹">
+
+<div id="sizeBox">
+<label>Size</label>
+<select id="size">
+    <option>S</option>
+    <option>M</option>
+    <option>L</option>
+    <option>XL</option>
+</select>
+</div>
+
+<input type="file" id="image">
+
+<button class="post-btn" onclick="addProduct()">Add Product</button>
+<button onclick="closePanel()">Close</button>
+</div>
+
+<script>
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+function login(){
+    let pass = prompt("Enter Admin Password");
+    if(pass === "2008@"){
+        document.getElementById("owner-panel").style.display = "block";
+    } else {
+        alert("Wrong Password");
+    }
+}
+
+function closePanel(){
+    document.getElementById("owner-panel").style.display = "none";
+}
+
+function toggleSize(){
+    let cat = document.getElementById("category").value;
+    document.getElementById("sizeBox").style.display =
+        cat === "accessories" ? "none" : "block";
+}
+
+function addProduct(){
+    let cat = document.getElementById("category").value;
+    let name = document.getElementById("name").value;
+    let price = document.getElementById("price").value;
+    let size = document.getElementById("size").value;
+    let img = document.getElementById("image").files[0];
+
+    if(!name || !price){
+        alert("Fill all fields");
+        return;
+    }
+
+    let reader = new FileReader();
+    reader.onload = function(e){
+        let product = {
+            category: cat,
+            name,
+            price,
+            size: cat === "clothes" ? size : "",
+            image: e.target.result
+        };
+        products.push(product);
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts();
+        closePanel();
+    };
+
+    if(img){
+        reader.readAsDataURL(img);
+    } else {
+        let product = {
+            category: cat,
+            name,
+            price,
+            size: cat === "clothes" ? size : "",
+            image: "https://via.placeholder.com/200"
+        };
+        products.push(product);
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts();
+        closePanel();
+    }
+}
+
+function renderProducts(){
+    let list = document.getElementById("productList");
+    list.innerHTML = "";
+    products.forEach(p => {
+        list.innerHTML += `
         <div class="product-card">
-            <img src="https://via.placeholder.com/200" alt="Sample">
-            <h3>Sample Product</h3>
-            <p>Price: ₹999</p>
-            <p>Size: M</p>
-            <small>Category: Clothes</small>
-        </div>
-    </div>
+            <img src="${p.image}">
+            <h3>${p.name}</h3>
+            <p>₹${p.price}</p>
+            ${p.size ? `<p>Size: ${p.size}</p>` : ""}
+            <small>${p.category}</small>
+        </div>`;
+    });
+}
 
-    <div class="description-note">
-        <p>"You will find the best clothes on our website, just search and you will find what you want."</p>
-    </div>
-
-    <button class="admin-trigger" onclick="login()">🔒</button>
-
-    <div id="owner-panel">
-        <h2 style="margin-top:0;">Owner Dashboard</h2>
-        <label>Website Background:</label>
-        <input type="color" id="siteColor" onchange="changeTheme()">
-        <hr>
-        <h3>Add New Product</h3>
-        <label>Category:</label>
-        <select id="pCategory" onchange="toggleSizeOption()">
-            <option value="clothes">Clothes 👕</option>
-            <option value="accessories">Accessories ⌚</option>
-        </select>
-        <input type="text" id="name" placeholder="Product Name">
-        <input type="number" id="price" placeholder="Price (₹)">
-        <div id="sizeSection">
-            <label>Select Size:</label>
-            <select id="size">
-                <option>S</option>
-                <option>M</option>
-                <option>L</option>
-                <option>XL</option>
-            </select>
-        </div>
-        <label>Product Image:</label>
-        <input type="file" id="imgInput" accept="image/*">
-        <button class="post-btn" onclick="saveProduct()">Post Product</button>
-        <button onclick="document.getElementById('owner-panel').style.display='none'" style="width:100%; margin-top:10px; padding:8px; background:#ddd; border:none; cursor:pointer;">Cancel / Close</button>
-    </div>
-
-    <script>
-        function login() {
-            let p = prompt("Enter Admin Password:");
-            if(p === "2008@") {
-                document.getElementById('owner-panel').style.display = 'block';
-            } else {
-                alert("Incorrect Password!");
-            }
-        }
-
-        function toggleSizeOption() {
-            let category = document.getElementById('pCategory').value;
-            let sizeSection = document.getElementById('sizeSection');
-            sizeSection.style.display = (category === "accessories") ? "none" : "block";
-        }
-
-        function changeTheme() {
-            let color = document.getElementById('siteColor').value;
-            document.body.style.backgroundColor = color;
-        }
-
-        function saveProduct() {
-            let cat = document.getElementById('pCategory').value;
-            let n = document.getElementById('name').value;
-            let p = document.getElementById('price').value;
-            let s = document.getElementById('size').value;
-            let imgFile = document.getElementById('imgInput').files[0];
-
-            if(!n || !p) { alert("Please fill name and price!"); return; }
-
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let sizeText = (cat === "clothes") ? `<p>Size: ${s}</p>` : "";
-                let card = `
-                    <div class="product-card">
-                        <img src="${e.target.result}" alt="New Product">
-                        <h3>${n}</h3>
-                        <p>Price: ₹${p}</p>
-                        ${sizeText}
-                        <small style="color:gray;">Category: ${cat}</small>
-                    </div>`;
-                document.getElementById('productList').innerHTML += card;
-                alert("Product Posted Successfully!");
-                document.getElementById('owner-panel').style.display = 'none';
-            };
-
-            if(imgFile) {
-                reader.readAsDataURL(imgFile);
-            } else {
-                let card = `
-                    <div class="product-card">
-                        <img src="https://via.placeholder.com/200" alt="No Image">
-                        <h3>${n}</h3>
-                        <p>Price: ₹${p}</p>
-                        ${(cat === "clothes") ? `<p>Size: ${s}</p>` : ""}
-                        <small style="color:gray;">Category: ${cat}</small>
-                    </div>`;
-                document.getElementById('productList').innerHTML += card;
-                alert("Posted without image!");
-                document.getElementById('owner-panel').style.display = 'none';
-            }
-        }
-    </script>
+function loadProducts(){
+    renderProducts();
+}
+</script>
 
 </body>
 </html>
