@@ -3,166 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&G ERA - Premium Clothing</title>
+    <title>A&G ERA - Owner Panel & Store</title>
+    
     <style>
-        /* A/* Ensure body is relative for fixed positioning */
-body { position: relative; }
+        /* 1. CSS Styles (Design) */
+        :root {
+            --bg-color: #f5f5f5;
+            --nav-color: #000;
+        }
 
-/* Hide panel initially */
-#owner-panel { display: none; }apka Style yahan aayega */
-        body { margin: 0; padding: 0; font-family: 'Arial', sans-serif; background: #f5f5f5; color: #333; }
-        header { background: #000; color: #fff; padding: 20px; text-align: center; }
-        .container { padding: 50px; text-align: center; }
-        .btn { background: #ffd700; padding: 10px 20px; text-decoration: none; color: #000; font-weight: bold; border-radius: 5px; }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            transition: 0.3s;
+        }
+
+        header {
+            background: var(--nav-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        /* Horizontal Menu */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            background: #1a1a1a;
+            padding: 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Product Grid */
+        .product-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+        .product-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        /* Owner Panel Styling */
+        #owner-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border: 2px solid #000;
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        input, select { width: 100%; padding: 10px; margin: 10px 0; }
+        .post-btn { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
+        
+        .admin-trigger {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #000;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
     </style>
 </head>
 <body>
 
     <header>
         <h1>A&G ERA</h1>
-        <p>Premium Clothing Line</p>
     </header>
-
-    <div class="container">
-        <h2>Welcome to Our Store</h2>
-        <p>Coming Soon... Hamari nayi collection jaldi hi live hogi!</p>
-        <br><br>
-        <a href="#" class="btn">Browse Collection</a>
-    </div>
-
-</body>
-</html>
-<header>
-    <div class="logo">A&G ERA</div>
-    <nav>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li class="dropdown">
-                <a href="#">Men ▾</a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Shirts</a></li>
-                    <li><a href="#">Baggy Pants</a></li>
-                    <li><a href="#">Watches</a></li>
-                </ul>
-            </li>
-            <li class="dropdown">
-                <a href="#">Women ▾</a>
-                <ul class="dropdown-menu"
-                </ul>
-            
-            <li><a href="#">Contact</a></li>
-        </ul>
-    </nav>
-    <div class="cart-icon">🛒 <span id="cart-count">0</span></div>
-</header>
-
-<section class="collection">
-    <h2>Men's Collection</h2>
-    <div class="product-grid">
-        <div class="product-card">
-        
-                    <option>Default</option>
-                </select>
-            </div>
-            <button class="buy-now">Buy Now</button>
-        </div>
-        </div>
-</section
-    <nav style="display: flex; gap: 20px; justify-content: center; padding: 15px; background: var(--main-bg);">
-  <a href="#home">Home</a>
-  <a href="#mens">Men's</a>
-  <a href="#womens">Women's</a>
-    </nav>
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Shop - Owner Panel</title>
-    <style>
-        /* CSS Variables - Yeh hum Owner Panel se change karenge */
-        :root {
-            --bg-color: #ffffff;
-            --main-font-color: #333;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--main-font-color);
-            font-family: Arial, sans-serif;
-            transition: 0.3s;
-        }
-
-        /* 1. Horizontal Navigation Menu */
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            padding: 20px;
-            background: #f8f8f8;
-            border-bottom: 2px solid #ddd;
-        }
-
-        nav a {
-            text-decoration: none;
-            font-weight: bold;
-            color: #333;
-            font-size: 1.2rem;
-        }
-
-        /* 2. Admin Panel Section (Hidden by default) */
-        #owner-panel {
-            display: none; /* Login ke baad dikhega */
-            border: 2px solid #333;
-            padding: 20px;
-            margin: 20px;
-            background: #eee;
-            border-radius: 8px;
-        }
-
-        .form-group { margin-bottom: 10px; }
-        label { display: block; font-weight: bold; }
-
-        /* Login Button Styling */
-        .admin-btn {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 10px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
 
     <nav>
         <a href="#">Home</a>
         <a href="#">Men's</a>
         <a href="#">Women's</a>
-    
-<!-- Owner Panel Button (Top-Left) -->
-<button id="owner-btn" style="position: fixed; top: 10px; left: 10px; z-index: 1000; background: #007bff; color: white; border: none; padding: 10px; cursor: pointer;">Owner Panel</button>
+    </nav>
 
-<!-- Owner Panel Modal -->
-<div id="owner-panel" style="display: none; position: fixed; top: 50px; left: 10px; width: 300px; background: white; border: 1px solid #ccc; padding: 20px; z-index: 1001; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-    <h3>Owner Panel</h3>
-    <input type="password" id="panel-password" placeholder="Enter Password">
-    <button id="unlock-btn">Unlock</button>
-    <div id="panel-content" style="display: none; margin-top: 20px;">
-        <h4>Website Customization</h4>
-        <label>Change Background Color: <input type="color" id="bg-color"></label><br>
-        <label>Change Font Size: <input type="range" id="font-size" min="12" max="24" value="16">px</label><br>
-        <button id="apply-custom">Apply Changes</button>
-        
-        <h4>Extras</h4>
-        <label>UPI ID: <input type="text" id="upi-id" placeholder="e.g., yourname@upi"></label><br>
-        <button id="save-upi">Save UPI ID</button><br>
-        <h5>Add Product</h5>
-        <input type="text" id="product-name" placeholder="Product Name"><br>
-        <input type="number" id="product-price" placeholder="Price"><br>
-        <input type="text" id="product-size" placeholder="Size"><br>
-        <input type="file" id="product-image" accept="image/*"><br>
-        <button id="add-product">Add Product</button>
-        <div id="product-list"></div>
+    <div class="product-container" id="productList">
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200" alt="Sample">
+            <h3>T-Shirt Sample</h3>
+            <p>Price: ₹499</p>
+            <p>Size: M, L</p>
+        </div>
     </div>
-</div>
+
+    <button class="admin-trigger" onclick="login()">🔒</button>
+
+    <div id="owner-panel">
+        <h2>Owner Panel</h2>
+        <label>Website Background:</label>
+        <input type="color" id="siteColor" onchange="changeTheme()">
+        
+        <hr>
+        <h3>Add Product</h3>
+        <input type="text" id="name" placeholder="Product Name">
+        <input type="number" id="price" placeholder="Price">
+        <select id="size">
+            <option>S</option>
+            <option>M</option>
+            <option>L</option>
+            <option>XL</option>
+        </select>
+        <input type="file" id="imgInput" accept="image/*">
+        <button class="post-btn" onclick="saveProduct()">Post Product</button>
+        <button onclick="document.getElementById('owner-panel').style.display='none'" style="width:100%; margin-top:5px;">Cancel</button>
+    </div>
+
+    <script>
+        // 1. Password Login
+        function login() {
+            let p = prompt("Enter Password:");
+            if(p === "2008@") {
+                document.getElementById('owner-panel').style.display = 'block';
+            } else {
+                alert("Wrong Password!");
+            }
+        }
+
+        // 2. Change Theme
+        function changeTheme() {
+            let color = document.getElementById('siteColor').value;
+            document.body.style.backgroundColor = color;
+        }
+
+        // 3. Post Product Logic
+        function saveProduct() {
+            let n = document.getElementById('name').value;
+            let p = document.getElementById('price').value;
+            let s = document.getElementById('size').value;
+            let imgFile = document.getElementById('imgInput').files[0];
+
+            if(!n || !p) { alert("Details bharo!"); return; }
+
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let card = `
+                    <div class="product-card">
+                        <img src="${e.target.result}" alt="New">
+                        <h3>${n}</h3>
+                        <p>Price: ₹${p}</p>
+                        <p>Size: ${s}</p>
+                    </div>`;
+                document.getElementById('productList').innerHTML += card;
+                alert("Posted Successfully!");
+                document.getElementById('owner-panel').style.display = 'none';
+            };
+            if(imgFile) reader.readAsDataURL(imgFile);
+        }
+    </script>
+
+</body>
+</html>
