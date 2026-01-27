@@ -6,7 +6,7 @@
     <title>A&G ERA - Owner Panel & Store</title>
     
     <style>
-        /* 1. CSS Styles (Design) */
+        /* 1. Design (CSS) */
         :root {
             --bg-color: #f5f5f5;
             --nav-color: #000;
@@ -26,7 +26,6 @@
             padding: 20px 0;
         }
 
-        /* Horizontal Menu */
         nav {
             display: flex;
             justify-content: center;
@@ -41,7 +40,6 @@
             text-transform: uppercase;
         }
 
-        /* Product Grid */
         .product-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -62,7 +60,23 @@
             border-radius: 5px;
         }
 
-        /* Owner Panel Styling */
+        /* --- Naya Description Note Style --- */
+        .description-note {
+            background: #fff;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 50px;
+            border-top: 2px solid #000;
+        }
+        .description-note p {
+            font-size: 1.2rem;
+            color: #333;
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
         #owner-panel {
             display: none;
             position: fixed;
@@ -76,10 +90,12 @@
             width: 90%;
             max-width: 400px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        input, select { width: 100%; padding: 10px; margin: 10px 0; }
-        .post-btn { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        .post-btn { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; }
         
         .admin-trigger {
             position: fixed;
@@ -87,10 +103,12 @@
             right: 20px;
             background: #000;
             color: white;
-            padding: 10px;
+            padding: 15px;
             border-radius: 50%;
             cursor: pointer;
             border: none;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -109,138 +127,110 @@
     <div class="product-container" id="productList">
         <div class="product-card">
             <img src="https://via.placeholder.com/200" alt="Sample">
-            <h3>T-Shirt Sample</h3>
-            <p>Price: ₹499</p>
-            <p>Size: M, L</p>
+            <h3>Sample Product</h3>
+            <p>Price: ₹999</p>
+            <p>Size: M</p>
+            <small>Category: Clothes</small>
         </div>
+    </div>
+
+    <div class="description-note">
+        <p>"You will find the best clothes on our website, just search and you will find what you want."</p>
     </div>
 
     <button class="admin-trigger" onclick="login()">🔒</button>
 
     <div id="owner-panel">
-        <h2>Owner Panel</h2>
+        <h2 style="margin-top:0;">Owner Dashboard</h2>
         <label>Website Background:</label>
         <input type="color" id="siteColor" onchange="changeTheme()">
-        
         <hr>
-        <h3>Add Product</h3>
-        <input type="text" id="name" placeholder="Product Name">
-        <input type="number" id="price" placeholder="Price">
-        <select id="size">
-            <option>S</option>
-            <option>M</option>
-            <option>L</option>
-            <option>XL</option>
+        <h3>Add New Product</h3>
+        <label>Category:</label>
+        <select id="pCategory" onchange="toggleSizeOption()">
+            <option value="clothes">Clothes 👕</option>
+            <option value="accessories">Accessories ⌚</option>
         </select>
+        <input type="text" id="name" placeholder="Product Name">
+        <input type="number" id="price" placeholder="Price (₹)">
+        <div id="sizeSection">
+            <label>Select Size:</label>
+            <select id="size">
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+            </select>
+        </div>
+        <label>Product Image:</label>
         <input type="file" id="imgInput" accept="image/*">
         <button class="post-btn" onclick="saveProduct()">Post Product</button>
-        <button onclick="document.getElementById('owner-panel').style.display='none'" style="width:100%; margin-top:5px;">Cancel</button>
+        <button onclick="document.getElementById('owner-panel').style.display='none'" style="width:100%; margin-top:10px; padding:8px; background:#ddd; border:none; cursor:pointer;">Cancel / Close</button>
     </div>
 
     <script>
-        // 1. Password Login
         function login() {
-            let p = prompt("Enter Password:");
+            let p = prompt("Enter Admin Password:");
             if(p === "2008@") {
                 document.getElementById('owner-panel').style.display = 'block';
             } else {
-                alert("Wrong Password!");
+                alert("Incorrect Password!");
             }
         }
 
-        // 2. Change Theme
+        function toggleSizeOption() {
+            let category = document.getElementById('pCategory').value;
+            let sizeSection = document.getElementById('sizeSection');
+            sizeSection.style.display = (category === "accessories") ? "none" : "block";
+        }
+
         function changeTheme() {
             let color = document.getElementById('siteColor').value;
             document.body.style.backgroundColor = color;
         }
 
-        // 3. Post Product Logic
         function saveProduct() {
+            let cat = document.getElementById('pCategory').value;
             let n = document.getElementById('name').value;
             let p = document.getElementById('price').value;
             let s = document.getElementById('size').value;
             let imgFile = document.getElementById('imgInput').files[0];
 
-            if(!n || !p) { alert("Details bharo!"); return; }
+            if(!n || !p) { alert("Please fill name and price!"); return; }
 
             let reader = new FileReader();
             reader.onload = function(e) {
+                let sizeText = (cat === "clothes") ? `<p>Size: ${s}</p>` : "";
                 let card = `
                     <div class="product-card">
-                        <img src="${e.target.result}" alt="New">
+                        <img src="${e.target.result}" alt="New Product">
                         <h3>${n}</h3>
                         <p>Price: ₹${p}</p>
-                        <p>Size: ${s}</p>
+                        ${sizeText}
+                        <small style="color:gray;">Category: ${cat}</small>
                     </div>`;
                 document.getElementById('productList').innerHTML += card;
-                alert("Posted Successfully!");
+                alert("Product Posted Successfully!");
                 document.getElementById('owner-panel').style.display = 'none';
             };
-            if(imgFile) reader.readAsDataURL(imgFile);
+
+            if(imgFile) {
+                reader.readAsDataURL(imgFile);
+            } else {
+                let card = `
+                    <div class="product-card">
+                        <img src="https://via.placeholder.com/200" alt="No Image">
+                        <h3>${n}</h3>
+                        <p>Price: ₹${p}</p>
+                        ${(cat === "clothes") ? `<p>Size: ${s}</p>` : ""}
+                        <small style="color:gray;">Category: ${cat}</small>
+                    </div>`;
+                document.getElementById('productList').innerHTML += card;
+                alert("Posted without image!");
+                document.getElementById('owner-panel').style.display = 'none';
+            }
         }
     </script>
 
 </body>
 </html>
-<!-- Paste this script at the end of your HTML page -->
-<script>
-    // Load data when page loads
-    window.onload = function() {
-        loadProducts();
-    };
-
-    // Function to save product
-    function saveProduct() {
-        const productInput = document.getElementById('productInput');
-        const product = productInput.value.trim();
-        if (product) {
-            // Load existing products
-            let products = JSON.parse(localStorage.getItem('products')) || [];
-            products.push(product);
-            // Save to localStorage
-            localStorage.setItem('products', JSON.stringify(products));
-            // Update the list
-            displayProducts(products);
-            productInput.value = ''; // Clear input
-        }
-    }
-
-    // Function to display products
-    function displayProducts(products) {
-        const productList = document.getElementById('productList');
-        productList.innerHTML = '';
-        products.forEach((product, index) => {
-            const li = document.createElement('li');
-            li.textContent = product;
-            // Add delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.onclick = function() {
-                deleteProduct(index);
-            };
-            li.appendChild(deleteBtn);
-            productList.appendChild(li);
-        });
-    }
-
-    // Function to delete product
-    function deleteProduct(index) {
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        products.splice(index, 1);
-        localStorage.setItem('products', JSON.stringify(products));
-        displayProducts(products);
-    }
-
-    // Load products on page load
-    function loadProducts() {
-        const products = JSON.parse(localStorage.getItem('products')) || [];
-        displayProducts(products);
-    }
-</script>
-
-<!-- Add these HTML elements if not already in your page -->
-<div>
-    <input type="text" id="productInput" placeholder="Enter product name">
-    <button onclick="saveProduct()">Save Product</button>
-</div>
-<ul id="productList"></ul>
