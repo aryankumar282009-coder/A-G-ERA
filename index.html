@@ -135,53 +135,30 @@
         <a href="#">Home</a>
         <a href="#">Men's</a>
         <a href="#">Women's</a>
-    </nav>
+    
+<!-- Owner Panel Button (Top-Left) -->
+<button id="owner-btn" style="position: fixed; top: 10px; left: 10px; z-index: 1000; background: #007bff; color: white; border: none; padding: 10px; cursor: pointer;">Owner Panel</button>
 
-    <h2 style="text-align: center;">Welcome to Our Store</h2>
-
-    <button class="admin-btn" onclick="checkPassword()">Login Owner Panel</button>
-
-    <div id="owner-panel">
-        <h3>Owner Control Panel (Secured)</h3>
+<!-- Owner Panel Modal -->
+<div id="owner-panel" style="display: none; position: fixed; top: 50px; left: 10px; width: 300px; background: white; border: 1px solid #ccc; padding: 20px; z-index: 1001; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+    <h3>Owner Panel</h3>
+    <input type="password" id="panel-password" placeholder="Enter Password">
+    <button id="unlock-btn">Unlock</button>
+    <div id="panel-content" style="display: none; margin-top: 20px;">
+        <h4>Website Customization</h4>
+        <label>Change Background Color: <input type="color" id="bg-color"></label><br>
+        <label>Change Font Size: <input type="range" id="font-size" min="12" max="24" value="16">px</label><br>
+        <button id="apply-custom">Apply Changes</button>
         
-        <div class="form-group">
-            <label>Change Background Color:</label>
-            <input type="color" id="bgColorPicker" onchange="updateTheme()">
-        </div>
-
-        <hr>
-
-        <div class="form-group">
-            <label>Product Name:</label>
-            <input type="text" id="pName" placeholder="e.g. Blue T-Shirt">
-        </div>
-        <div class="form-group">
-            <label>Price:</label>
-            <input type="number" id="pPrice" placeholder="Enter Price">
-        </div>
-        <div class="form-group">
-            <label>Size:</label>
-            <select id="pSize">
-                <option>S</option>
-                <option>M</option>
-                <option>L</option>
-                <option>XL</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Product Image:</label>
-            <input type="file" id="pImage" accept="image/*">
-        </div>
-
-        <button onclick="addProduct()">Post Product</button>
-        <button onclick="document.getElementById('owner-panel').style.display='none'">Close Panel</button>
+        <h4>Extras</h4>
+        <label>UPI ID: <input type="text" id="upi-id" placeholder="e.g., yourname@upi"></label><br>
+        <button id="save-upi">Save UPI ID</button><br>
+        <h5>Add Product</h5>
+        <input type="text" id="product-name" placeholder="Product Name"><br>
+        <input type="number" id="product-price" placeholder="Price"><br>
+        <input type="text" id="product-size" placeholder="Size"><br>
+        <input type="file" id="product-image" accept="image/*"><br>
+        <button id="add-product">Add Product</button>
+        <div id="product-list"></div>
     </div>
-
-    <div id="product-list" style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 30px;">
-    </div>
-
-    <script>
-        // Password Protection
-        function checkPassword() {
-            let pass = prompt("Enter Admin
-                              2008@
+</div>
