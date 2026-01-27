@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A&G ERA - Premium Clothing</title>
+    <style>
+        /* (Include all base styles from previous versions - omitted for brevity) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Arial', sans-serif; background: #f5f5f5; color: #333; }
+        
+        header { position: fixed; top: 0; width: 100%; background: #000; color: #fff; padding: 10px 20px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        header h1 { font-size: 24px; display: inline; }
+        nav { display: inline; float: right; }
+        nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; transition: color 0.3s; }
+        nav a:hover { color: #ffd700; }
+        .cart-icon { position: relative; cursor: pointer; font-size: 20px; }
+        .cart-badge { background: #ffd700; color: #000; border-radius: 50%; padding: 2px 6px; font-size: 12px; position: absolute; top: -5px; right: -10px; }
+        
+        .cart-sidebar { position: fixed; right: -350px; top: 60px; width: 350px; height: calc(100vh - 60px); background: #fff; box-shadow: -2px 0 5px rgba(0,0,0,0.3); transition: right 0.3s; z-index: 99; padding: 20px; overflow-y: auto; }
+        .cart-sidebar.open { right: 0; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; padding: 10px; border-bottom: 1px solid #ddd; }
+        .cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
+        .cart-item-details { flex: 1; margin-left: 10px; }
+        .cart-item-details h4 { margin: 0; font-size: 14px; }
+        .cart-item-details p { margin: 5px 0; font-size: 12px; color: #666; }
+        .quantity-controls { display: flex; align-items: center; }
+        .quantity-controls button { background: #ddd; border: none; padding: 5px; cursor: pointer; }
+        .remove-btn { color: red; cursor: pointer; margin-left: 10px; }
+        .cart-total { font-weight: bold; margin-top: 20px; }
+        .clear-cart { background: #000; color: #fff; border: none; padding: 10px; width: 100%; cursor: pointer; margin-top: 10px; }
+        
+        main { margin-top: 60px; padding: 20px; max-width: 1200px; margin: 60px auto 0; }
+        section { background: #fff; margin: 20px 0; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #000; margin-bottom: 15px; }
+        
+        .clothes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .item { text-align: center; padding: 15px; border: 1px solid #ddd; border-radius: 8px; transition: transform 0.3s; }
+        .item:hover { transform: scale(1.05); }
+        .item img { width: 100%; height: 200px; object-fit: cover; border-radius: 5px; }
+        .item h3 { margin: 10px 0; color: #000; }
+        .item p { color: #666; }
+        .add-to-cart { background: #000; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+        .add-to-cart:hover { background: #ffd700; color: #000; }
+        
+        .carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px 0; }
+        .carousel img { width: 300px; height: 200px; object-fit: cover; border-radius: 8px; scroll-snap-align: start; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #000; color: #fff; border: none; padding: 10px; border-radius: 5px; cursor: pointer; transition: background 0.3s; }
+        button:hover { background: #ffd700; color: #000; }
+        footer { background: #000; color: #fff; text-align: center; padding: 20px; margin-top: 40px; }
+        
+        @media (max-width: 768px) { .clothes-grid { grid-template-columns: 1fr; } .cart-sidebar { width: 100%; right: -100%; } header h1 { font-size: 20px; } nav { float: none; text-align: center; margin-top: 10px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>A&G ERA</h1>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#men">Men</a>
+            <a href="#women">Women</a>
+            <a href="#accessories">Accessories</a>
+            <a href="#contact">Contact</a>
+            <div class="cart-icon" onclick="toggleCart()">🛒 <span class="cart-badge" id="cartBadge">0</span></div>
+        </nav>
+    </header>
+    
+    <div class="cart-sidebar" id="cartSidebar">
+        <h3>Your Cart</h3>
+        <div id="cartItems"></div>
+        <div class="cart-total">Total: $<span id="cartTotal">0.00</span></div>
+        <button class="clear-cart" onclick="clearCart()">Clear Cart</button>
+    </div>
+    
+    <main>
+        <section id="home">
+            <h2>Welcome to A&G ERA</h2>
+            <p>Discover premium clothing with timeless style. Swipe through our featured collection:</p>
+            <div class="carousel">
+                <img src="https://via.placeholder.com/300x200?text=Featured+1" alt="Featured Item 1">
+                <img src="https://via.placeholder.com/300x200?text=Featured+2" alt="Featured Item 2">
+                <img src="https://via.placeholder.com/300x200?text=Featured+3" alt="Featured Item 3">
+            </div>
+        </section>
+        
+        <section id="men">
+            <h2>Men's Collection</h2>
+            <div class="clothes-grid" id="menGrid">
+                <div class="item">
+                    <img src="https://via.placeholder.com/250x200?text=Mens+Shirt" alt="Men's Shirt">
+                    <h3>Classic Shirt</h3>
+                    <p>$49.99 - Elegant and comfortable.</p>
+                    <button class="add-to-cart" onclick="addToCart('Classic Shirt', 49.99, 'https://via.placeholder.com/250x200?text=Mens+Shirt')">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="women">
+            <h2>Women's Collection</h2>
+            <div class="clothes-grid" id="womenGrid">
+                <div class="item">
+                    <img src="https://via.placeholder.com/250x200?text=Womens+Dress" alt="Women's Dress">
+                    <h3>Evening Dress</h3>
+                    <p>$89.99 - Glamorous and chic.</p>
+                    <button class="add-to-cart" onclick="addToCart('Evening Dress', 89.99, 'https://via.placeholder.com/250x200?text=Womens+Dress')">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="accessories">
+            <h2>Accessories</h2>
+            <div class="clothes-grid" id="accessoriesGrid">
+                <div class="item">
+                    <img src="https://via.placeholder.com/250x200?text=Watch" alt="Watch">
+                    <h3>Luxury Watch</h3>
+                    <p>$199.99 - Timeless elegance.</p>
+                    <button class="add-to-cart" onclick="addToCart('Luxury Watch', 199.99, 'https://via.placeholder.com/250x200?text=Watch')">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form>
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Message" rows="5" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2023 A&G ERA. All rights reserved.</p>
+    </footer>
+    
+    <!-- Existing JS for cart and other features - omitted for brevity -->
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function addToCart(name, price, img) {
+            const existing = cart.find(item => item.name === name);
+            if (existing) existing.quantity++;
+            else cart.push({ name, price, img, quantity: 1 });
+            saveCart();
+            updateCartDisplay();
+            alert(`${name} added to cart!`);
+        }
+        
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            const cartBadge = document.getElementById('cartBadge');
+            cartItems.innerHTML = '';
+            let total = 0, count = 0;
+            cart.forEach((item, index) => {
+                total += item.price * item.quantity;
+                count += item.quantity;
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="cart-item-details">
+                            <h4>${item.name}</h4>
+                            <p>$${item.price} x ${item.quantity}</p>
+                        </div>
+                        <div class="quantity-controls">
+                            <button onclick="changeQuantity(${index}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="changeQuantity(${index}, 1)">+</button>
+                        </div>
+                        <span class="remove-btn" onclick="removeItem(${index})">✕</span>
+                    </div>
+                `;
+            });
+            cartTotal.textContent = total.toFixed(2);
+            cartBadge.textContent = count;
+        }
+        
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) removeItem(index);
+            else saveCart();
+            updateCartDisplay();
+        }
+        
+        function removeItem(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartDisplay();
+        }
+        
+        function clearCart() {
+            cart = [];
+            saveCart();
+            updateCartDisplay();
+        }
+        
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('open');
+        }
+        
+        updateCartDisplay();
+        
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We\'ll get back to you soon.');
+            this.reset();
+        });
+    </script>
+    
+    <!-- New Admin Button and Panel Code -->
+    <button id="adminBtn" style="position:fixed;bottom:20px;right:20px;z-index:999;">
+      Owner Panel
+    </button>
+
+    <div id="adminPanel" style="display:none; position:fixed; inset:0; background:#000000e6; color:#fff; padding:20px; overflow:auto; z-index:1000;">
+      <h2>🔒 A&G ERA – Owner Panel</h2>
+
+      <div id="loginBox">
+        <input type="password" id="adminPass" placeholder="Enter Owner Password">
+        <button onclick="loginAdmin()">Login</button>
+        <p id="loginError" style="color:red;"></p>
+      </div>
+
+      <div id="adminContent" style="display:none;">
+        <hr>
+
+        <h3>➕ Add New Product</h3>
+        <input id="pTitle" placeholder="Product Title">
+        <input id="pPrice" placeholder="Price">
+        <input type="file" id="pImage">
+        <button onclick="addProduct()">Add Product</button>
+
+        <hr>
+
+        <h3>🏦 Payment Details</h3>
+        <input id="bankName" placeholder="Bank / UPI Name">
+        <input id="bankAccount" placeholder="Account / UPI ID">
+        <button onclick="saveBank()">Save Payment Info</button>
+
+        <p id="savedMsg" style="color:lightgreen;"></p>
+
+        <hr>
+        <button onclick="logoutAdmin()">Logout</button>
+      </div>
+    </div>
+
+    <!-- New JavaScript for Admin Panel -->
+    <script>
+    const OWNER_PASSWORD = "2008@";
+
+    // Open panel
+    document.getElementById("adminBtn").onclick = () => {
+      document.getElementById("adminPanel").style.display = "block";
+    };
+
+    function loginAdmin() {
+      const pass = document.getElementById("adminPass").value;
+      if (pass === OWNER_PASSWORD) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminContent").style.display = "block";
+      } else {
+        document.getElementById("loginError").innerText = "Wrong Password";
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById("adminPanel").style.display = "none";
+      document.getElementById("adminContent").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+    }
+
+    // Add product (frontend demo using localStorage)
+    function addProduct() {
+      const title = pTitle.value;
+      const price = pPrice.value;
+      const img = pImage.files[0];
+      if (!title || !price || !img) return alert("Fill all fields");
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        const products = JSON.parse(localStorage.getItem("products") || "[]");
+        products.push({ title, price, img: reader.result });
+        localStorage.setItem("products", JSON.stringify(products));
+        alert("Product Added");
+        renderProducts();
+      };
+      reader.readAsDataURL(img);
+    }
+
+    // Save bank info
+    function saveBank() {
+      localStorage.setItem("bankInfo", JSON.stringify({
+        name: bankName.value,
+        account: bankAccount.value
+      }));
+      savedMsg.innerText = "Payment details saved";
+    }
+
+    // Show products on site
+    function renderProducts() {
+      const grid = document.querySelector(".clothes-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
+      products.forEach(p => {
+        grid.innerHTML += `
+          <div class="item">
+            <img src="${p.img}">
+            <h3>${p.title}</h3>
+            <p>₹${p.price}</p>
+            <button>Buy Now</button>
+          </div>`;
+      });
+    }
+
+    renderProducts();
+    </script>
+</body>
+</html>
