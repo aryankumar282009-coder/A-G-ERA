@@ -182,3 +182,65 @@
 
 </body>
 </html>
+<!-- Paste this script at the end of your HTML page -->
+<script>
+    // Load data when page loads
+    window.onload = function() {
+        loadProducts();
+    };
+
+    // Function to save product
+    function saveProduct() {
+        const productInput = document.getElementById('productInput');
+        const product = productInput.value.trim();
+        if (product) {
+            // Load existing products
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+            products.push(product);
+            // Save to localStorage
+            localStorage.setItem('products', JSON.stringify(products));
+            // Update the list
+            displayProducts(products);
+            productInput.value = ''; // Clear input
+        }
+    }
+
+    // Function to display products
+    function displayProducts(products) {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
+        products.forEach((product, index) => {
+            const li = document.createElement('li');
+            li.textContent = product;
+            // Add delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = function() {
+                deleteProduct(index);
+            };
+            li.appendChild(deleteBtn);
+            productList.appendChild(li);
+        });
+    }
+
+    // Function to delete product
+    function deleteProduct(index) {
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        products.splice(index, 1);
+        localStorage.setItem('products', JSON.stringify(products));
+        displayProducts(products);
+    }
+
+    // Load products on page load
+    function loadProducts() {
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+        displayProducts(products);
+    }
+</script>
+
+<!-- Add these HTML elements if not already in your page -->
+<div>
+    <input type="text" id="productInput" placeholder="Enter product name">
+    <button onclick="saveProduct()">Save Product</button>
+</div>
+<ul id="productList"></ul>
