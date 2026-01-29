@@ -25,7 +25,8 @@ nav a{color:white;text-decoration:none;font-weight:bold}
 display:none;position:fixed;top:50%;left:50%;
 transform:translate(-50%,-50%);
 background:white;padding:20px;width:90%;max-width:400px;
-box-shadow:0 0 20px rgba(0,0,0,.5)
+box-shadow:0 0 20px rgba(0,0,0,.5);
+z-index:9999;
 }
 
 input,select,button{width:100%;padding:10px;margin:8px 0}
@@ -82,8 +83,7 @@ input,select,button{width:100%;padding:10px;margin:8px 0}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const app = initializeApp({
 apiKey:"AIzaSyAh6-HK90YwIjWI5lAXJ7fUd2kP0o-33d4",
@@ -94,88 +94,94 @@ projectId:"aryan-8efc1"
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let allProducts=[], cart=[];
-
-window.recaptchaVerifier = new RecaptchaVerifier(
-"recaptcha-container",{size:"normal"},auth
-);
-
+let allProducts=[], cart=[], currentProduct=null;
 let confirmationResult;
+
+// Initialize reCAPTCHA
+window.recaptchaVerifier = new RecaptchaVerifier("recaptcha-container",{size:"normal"},auth);
 
 /* PRODUCTS */
 async function loadProducts(){
-const snap=await getDocs(collection(db,"products"));
-allProducts=[];
-snap.forEach(d=>allProducts.push(d.data()));
-render(allProducts);
+  const snap = await getDocs(collection(db,"products"));
+  allProducts = [];
+  snap.forEach(d => allProducts.push(d.data()));
+  render(allProducts);
 }
 
 function render(list){
-productList.innerHTML="";
-list.forEach(p=>{
-productList.innerHTML+=`
-<div class="card">
-<img src="${p.image}">
-<h3>${p.name}</h3>
-<p>₹${p.price}</p>
-<p>Size: ${p.size}</p>
-<div class="actions">
-<button class="cart" onclick='addToCart(${JSON.stringify(p)})'>Add</button>
-<button class="buy" onclick='buyNow(${JSON.stringify(p)})'>Buy</button>
-</div>
-</div>`;
-});
+  productList.innerHTML="";
+  list.forEach(p=>{
+    productList.innerHTML+=`
+    <div class="card">
+      <img src="${p.image}">
+      <h3>${p.name}</h3>
+      <p>₹${p.price}</p>
+      <p>Size: ${p.size}</p>
+      <div class="actions">
+        <button class="cart" onclick='addToCart(${JSON.stringify(p)})'>Add</button>
+        <button class="buy" onclick='buyNow(${JSON.stringify(p)})'>Buy</button>
+      </div>
+    </div>`;
+  });
 }
 
 /* CART */
-window.addToCart=p=>{cart.push(p);alert("Added")}
-
-window.openCart=()=>{
-cartBox.style.display="block";
-cartItems.innerHTML="";
-let t=0;
-cart.forEach(p=>{
-cartItems.innerHTML+=`<p>${p.name} - ₹${p.price}</p>`;
-t+=Number(p.price);
-});
-total.innerText=t;
+window.addToCart = p => {cart.push(p); alert("Added to cart");}
+window.openCart = ()=>{
+  cartBox.style.display="block";
+  cartItems.innerHTML="";
+  let t=0;
+  cart.forEach(p=>{
+    cartItems.innerHTML+=`<p>${p.name} - ₹${p.price}</p>`;
+    t+=Number(p.price);
+  });
+  total.innerText=t;
 }
 
-window.buyNow=p=>{cart=[p];openCart()}
-window.checkout=()=>loginBox.style.display="block";
-
-/* OTP */
-window.sendOTP=async()=>{
-if(uphone.value.length!==10) return alert("Invalid phone");
-confirmationResult = await signInWithPhoneNumber(
-auth,"+91"+uphone.value,window.recaptchaVerifier
-);
-otp.style.display="block";
-verifyBtn.style.display="block";
-alert("OTP Sent");
+/* BUY FLOW */
+window.buyNow = p => {
+  currentProduct = p;
+  cart = [p]; // single product purchase
+  loginBox.style.display="block"; // first show OTP login
 }
 
-window.verifyOTP=async()=>{
-await confirmationResult.confirm(otp.value);
-loginBox.style.display="none";
-addressBox.style.display="block";
+window.checkout = () => {
+  if(cart.length===0){alert("Cart is empty"); return;}
+  loginBox.style.display="block";
+}
+
+/* OTP LOGIN */
+window.sendOTP = async () => {
+  if(uphone.value.length !== 10) return alert("Invalid phone");
+  confirmationResult = await signInWithPhoneNumber(auth,"+91"+uphone.value, window.recaptchaVerifier);
+  otp.style.display="block";
+  verifyBtn.style.display="block";
+  alert("OTP Sent");
+}
+
+window.verifyOTP = async () => {
+  await confirmationResult.confirm(otp.value);
+  loginBox.style.display="none";
+  addressBox.style.display="block";
+  // Pre-fill address name
+  aname.value = uphone.value;
 }
 
 /* PAYMENT */
-window.payNow=()=>{
-if(!address.value||!pincode.value) return alert("Fill address");
-let amt=total.innerText;
-window.location.href=
-`upi://pay?pa=9354189671-1@naviaxis&pn=AGERA&am=${amt}&cu=INR`;
+window.payNow = () => {
+  if(!address.value || !pincode.value || !aname.value) return alert("Fill address");
+  let amt = currentProduct.price;
+  window.location.href = `upi://pay?pa=9354189671-1@naviaxis&pn=AGERA&am=${amt}&cu=INR`;
 }
 
 /* FILTER */
-window.filterProducts=()=>{
-let q=search.value.toLowerCase();
-render(allProducts.filter(p=>p.name.toLowerCase().includes(q)));
+window.filterProducts = ()=> {
+  let q = search.value.toLowerCase();
+  render(allProducts.filter(p=>p.name.toLowerCase().includes(q)));
 }
-window.setFilter=c=>{
-render(c==="all"?allProducts:allProducts.filter(p=>p.category===c));
+
+window.setFilter = c => {
+  render(c==="all"?allProducts:allProducts.filter(p=>p.category===c));
 }
 
 loadProducts();
