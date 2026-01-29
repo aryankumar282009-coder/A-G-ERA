@@ -3,81 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AG ERA</title>
+<title>AG ERA - Store</title>
 <style>
-body{font-family:Arial;margin:0;background:#f5f5f5;}
-header{background:black;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center;}
-header h2{margin:0;}
-nav{display:flex;justify-content:center;gap:20px;background:#1a1a1a;padding:10px;}
-nav a{color:white;text-decoration:none;font-weight:bold;}
-.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:30px;}
-.card{background:white;padding:15px;border-radius:10px;text-align:center;box-shadow:0 4px 8px rgba(0,0,0,0.1);}
-.card img{width:100%;height:220px;object-fit:cover;}
-.actions{display:flex;gap:8px;justify-content:center;margin-top:10px;}
-.actions button{padding:8px;border:none;border-radius:5px;font-weight:bold;cursor:pointer;}
-.cart{background:black;color:white;}
-.buy{background:orange;}
-.popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;width:90%;max-width:400px;box-shadow:0 0 20px rgba(0,0,0,.5);}
-input,select,button{width:100%;padding:10px;margin:8px 0;}
-.admin{position:fixed;bottom:20px;right:20px;padding:15px;border-radius:50%;background:black;color:white;cursor:pointer;}
-#panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border:2px solid #000;max-width:400px;}
+    body{font-family:Arial, sans-serif;margin:0;background:#f5f5f5;}
+    header{background:black;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center;}
+    header h2{margin:0;}
+    #search{padding:8px; border-radius:5px; border:none;}
+    nav{display:flex;justify-content:center;gap:20px;background:#1a1a1a;padding:10px;}
+    nav a{color:white;text-decoration:none;font-weight:bold; cursor:pointer;}
+    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:30px;}
+    .card{background:white;padding:15px;border-radius:10px;text-align:center;box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+    .card img{width:100%;height:220px;object-fit:cover;border-radius:5px;}
+    .actions{display:flex;gap:8px;justify-content:center;margin-top:10px;}
+    .actions button{padding:8px;border:none;border-radius:5px;font-weight:bold;cursor:pointer;}
+    .cart{background:black;color:white;}
+    .buy{background:orange;}
+    .popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;width:90%;max-width:400px;box-shadow:0 0 20px rgba(0,0,0,.5);z-index:1000;}
+    input,select,button{width:100%;padding:10px;margin:8px 0;box-sizing: border-box;}
+    .admin{position:fixed;bottom:20px;right:20px;padding:15px;border-radius:50%;background:black;color:white;cursor:pointer;border:none;font-size:20px;}
+    #panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border:2px solid #000;width:90%;max-width:400px;z-index:1001;}
 </style>
 </head>
 <body>
 
 <header>
-<h2>AG ERA</h2>
-<input id="search" placeholder="Search Products" onkeyup="filterProducts()">
+    <h2>AG ERA</h2>
+    <input id="search" placeholder="Search Products" onkeyup="filterProducts()">
 </header>
 
 <nav>
-<a href="#" onclick="setFilter('all')">Home</a>
-<a href="#" onclick="setFilter('Men')">Men</a>
-<a href="#" onclick="setFilter('Women')">Women</a>
-<a href="#" onclick="openCart()">Cart 🛒</a>
+    <a onclick="setFilter('all')">Home</a>
+    <a onclick="setFilter('Men')">Men</a>
+    <a onclick="setFilter('Women')">Women</a>
+    <a onclick="openCart()">Cart 🛒</a>
 </nav>
 
 <div class="products" id="productList"></div>
 
-<!-- CART -->
 <div class="popup" id="cartBox">
-<h3>Your Cart</h3>
-<div id="cartItems"></div>
-<h4>Total ₹<span id="total">0</span></h4>
-<button onclick="checkout()">Checkout</button>
-<button onclick="cartBox.style.display='none'">Close</button>
+    <h3>Your Cart</h3>
+    <div id="cartItems"></div>
+    <h4>Total ₹<span id="total">0</span></h4>
+    <button onclick="checkout()">Checkout</button>
+    <button onclick="document.getElementById('cartBox').style.display='none'">Close</button>
 </div>
 
-<!-- LOGIN -->
 <div class="popup" id="loginBox">
-<h3>Verify Phone</h3>
-<input id="uphone" placeholder="10-digit Phone">
-<div id="recaptcha-container"></div>
-<button onclick="sendOTP()">Send OTP</button>
-<input id="otp" placeholder="Enter OTP" style="display:none">
-<button id="verifyBtn" style="display:none" onclick="verifyOTP()">Verify OTP</button>
+    <h3>Verify Phone</h3>
+    <input id="uphone" placeholder="10-digit Phone">
+    <div id="recaptcha-container"></div>
+    <button onclick="sendOTP()">Send OTP</button>
+    <input id="otp" placeholder="Enter OTP" style="display:none">
+    <button id="verifyBtn" style="display:none" onclick="verifyOTP()">Verify OTP</button>
 </div>
 
-<!-- ADDRESS -->
 <div class="popup" id="addressBox">
-<h3>Delivery Address</h3>
-<input id="aname" placeholder="Full Name">
-<input id="address" placeholder="Full Address">
-<input id="pincode" placeholder="Pincode">
-<button onclick="payNow()">Pay via UPI</button>
+    <h3>Delivery Address</h3>
+    <input id="aname" placeholder="Full Name">
+    <input id="address" placeholder="Full Address">
+    <input id="pincode" placeholder="Pincode">
+    <button onclick="payNow()">Pay via UPI</button>
 </div>
 
-<!-- ADMIN -->
-<button class="admin" onclick="panel.style.display='block'">🔒</button>
+<button class="admin" onclick="document.getElementById('panel').style.display='block'">🔒</button>
+
 <div id="panel">
-<h3>Owner Dashboard</h3>
-<select id="category"><option>Men</option><option>Women</option></select>
-<input id="name" placeholder="Product Name">
-<input id="price" placeholder="Price">
-<select id="size"><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-<input type="file" id="img">
-<button onclick="addProduct()">Add Product</button>
-<button onclick="panel.style.display='none'">Close</button>
+    <h3>Owner Dashboard</h3>
+    <select id="category"><option>Men</option><option>Women</option></select>
+    <input id="p_name" placeholder="Product Name">
+    <input id="p_price" placeholder="Price">
+    <select id="size"><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+    <input type="file" id="img" accept="image/*">
+    <button id="addBtn" onclick="addProduct()">Add Product</button>
+    <button onclick="document.getElementById('panel').style.display='none'">Close</button>
 </div>
 
 <script type="module">
@@ -85,104 +83,146 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// Firebase Config
-const app = initializeApp({
-apiKey:"AIzaSyAh6-HK90YwIjWI5lAXJ7fUd2kP0o-33d4",
-authDomain:"aryan-8efc1.firebaseapp.com",
-projectId:"aryan-8efc1"
-});
+const firebaseConfig = {
+    apiKey: "AIzaSyAh6-HK90YwIjWI5lAXJ7fUd2kP0o-33d4",
+    authDomain: "aryan-8efc1.firebaseapp.com",
+    projectId: "aryan-8efc1"
+};
+
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Variables
-let allProducts=[], cart=[];
+let allProducts = [], cart = [];
 let confirmationResult;
 
-// Recaptcha
-window.recaptchaVerifier = new RecaptchaVerifier("recaptcha-container",{size:"normal"},auth);
-
-// Load Products
-async function loadProducts(){
-const snap = await getDocs(collection(db,"products"));
-allProducts = [];
-snap.forEach(d=>allProducts.push(d.data()));
-render(allProducts);
+// --- Load Products Function ---
+async function loadProducts() {
+    try {
+        const snap = await getDocs(collection(db, "products"));
+        allProducts = [];
+        snap.forEach(d => {
+            allProducts.push(d.data());
+        });
+        render(allProducts);
+    } catch (err) {
+        console.error("Error loading products:", err);
+    }
 }
 
-// Render Products
-function render(list){
-productList.innerHTML = "";
-list.forEach(p=>{
-productList.innerHTML+=`
-<div class="card">
-<img src="${p.image}">
-<h3>${p.name}</h3>
-<p>₹${p.price}</p>
-<p>Size: ${p.size}</p>
-<div class="actions">
-<button class="cart" onclick='addToCart(${JSON.stringify(p)})'>Add</button>
-<button class="buy" onclick='buyNow(${JSON.stringify(p)})'>Buy</button>
-</div>
-</div>`;
-});
+// --- Render Products to UI ---
+function render(list) {
+    const container = document.getElementById('productList');
+    container.innerHTML = "";
+    list.forEach((p, index) => {
+        container.innerHTML += `
+        <div class="card">
+            <img src="${p.image}">
+            <h3>${p.name}</h3>
+            <p>₹${p.price}</p>
+            <p>Size: ${p.size}</p>
+            <div class="actions">
+                <button class="cart" onclick='addToCart(${JSON.stringify(p)})'>Add</button>
+                <button class="buy" onclick='buyNow(${JSON.stringify(p)})'>Buy</button>
+            </div>
+        </div>`;
+    });
 }
 
-// Cart Functions
-window.addToCart=p=>{cart.push(p);alert("Added to cart");}
-window.openCart=()=>{
-cartBox.style.display="block";
-cartItems.innerHTML="";
-let t=0;
-cart.forEach(p=>{
-cartItems.innerHTML+=`<p>${p.name} - ₹${p.price}</p>`;
-t+=Number(p.price);
-});
-total.innerText=t;
-}
-window.buyNow=p=>{cart=[p];openCart();}
-window.checkout=()=>loginBox.style.display="block";
+// --- Add Product (Fixed Logic) ---
+window.addProduct = async () => {
+    const btn = document.getElementById('addBtn');
+    const name = document.getElementById('p_name').value;
+    const price = document.getElementById('p_price').value;
+    const size = document.getElementById('size').value;
+    const category = document.getElementById('category').value;
+    const file = document.getElementById('img').files[0];
 
-// OTP Functions
-window.sendOTP=async()=>{
-if(uphone.value.length!==10) return alert("Invalid phone");
-confirmationResult = await signInWithPhoneNumber(auth,"+91"+uphone.value,window.recaptchaVerifier);
-otp.style.display="block"; verifyBtn.style.display="block";
-alert("OTP Sent");
-}
-window.verifyOTP=async()=>{
-await confirmationResult.confirm(otp.value);
-loginBox.style.display="none";
-addressBox.style.display="block";
-}
+    if (!name || !price || !file) return alert("All fields are required!");
 
-// Payment
-window.payNow=()=>{
-if(!aname.value||!address.value||!pincode.value) return alert("Fill address");
-let amt = cart.reduce((sum,p)=>sum+Number(p.price),0);
-window.location.href=`upi://pay?pa=9354189671-1@naviaxis&pn=AGERA&am=${amt}&cu=INR`;
-alert("Payment Initiated");
-}
+    btn.innerText = "Uploading...";
+    btn.disabled = true;
 
-// Admin - Add Product
-window.addProduct=()=>{
-if(!img.files[0]) return alert("Select image");
-const reader = new FileReader();
-reader.onload = async e=>{
-await addDoc(collection(db,"products"),{
-name:name.value, price:price.value, size:size.value, category:category.value, image:e.target.result
-});
-panel.style.display="none";
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+        try {
+            await addDoc(collection(db, "products"), {
+                name, price, size, category, image: reader.result
+            });
+            alert("Product Added!");
+            document.getElementById('panel').style.display = 'none';
+            // Clear inputs
+            document.getElementById('p_name').value = "";
+            document.getElementById('p_price').value = "";
+            loadProducts(); // Refresh list
+        } catch (e) {
+            alert("Error: " + e.message);
+        } finally {
+            btn.innerText = "Add Product";
+            btn.disabled = false;
+        }
+    };
+};
+
+// --- Cart & Other Functions ---
+window.addToCart = p => { cart.push(p); alert(p.name + " added!"); };
+window.openCart = () => {
+    const cartBox = document.getElementById('cartBox');
+    const cartItems = document.getElementById('cartItems');
+    const total = document.getElementById('total');
+    cartBox.style.display = "block";
+    cartItems.innerHTML = "";
+    let t = 0;
+    cart.forEach(p => {
+        cartItems.innerHTML += `<p>${p.name} - ₹${p.price}</p>`;
+        t += Number(p.price);
+    });
+    total.innerText = t;
+};
+window.buyNow = p => { cart = [p]; window.openCart(); };
+window.checkout = () => document.getElementById('loginBox').style.display = "block";
+
+// --- Filters ---
+window.filterProducts = () => {
+    let q = document.getElementById('search').value.toLowerCase();
+    render(allProducts.filter(p => p.name.toLowerCase().includes(q)));
+};
+window.setFilter = c => {
+    render(c === "all" ? allProducts : allProducts.filter(p => p.category === c));
+};
+
+// Initial Load
 loadProducts();
-alert("Product Added Successfully!");
-}
-reader.readAsDataURL(img.files[0]);
-}
 
-// Filters
-window.filterProducts=()=>{ let q = search.value.toLowerCase(); render(allProducts.filter(p=>p.name.toLowerCase().includes(q))); }
-window.setFilter=c=>{ render(c==="all"?allProducts:allProducts.filter(p=>p.category===c)); }
+// --- OTP Logic ---
+window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "normal" });
+window.sendOTP = async () => {
+    const ph = document.getElementById('uphone').value;
+    if (ph.length !== 10) return alert("Enter 10 digit number");
+    try {
+        confirmationResult = await signInWithPhoneNumber(auth, "+91" + ph, window.recaptchaVerifier);
+        document.getElementById('otp').style.display = "block";
+        document.getElementById('verifyBtn').style.display = "block";
+        alert("OTP Sent");
+    } catch (e) { alert(e.message); }
+};
+window.verifyOTP = async () => {
+    try {
+        await confirmationResult.confirm(document.getElementById('otp').value);
+        document.getElementById('loginBox').style.display = "none";
+        document.getElementById('addressBox').style.display = "block";
+    } catch (e) { alert("Wrong OTP"); }
+};
 
-loadProducts();
+window.payNow = () => {
+    const n = document.getElementById('aname').value;
+    const a = document.getElementById('address').value;
+    const p = document.getElementById('pincode').value;
+    if (!n || !a || !p) return alert("Fill address");
+    let amt = cart.reduce((s, x) => s + Number(x.price), 0);
+    window.location.href = `upi://pay?pa=9354189671-1@naviaxis&pn=AGERA&am=${amt}&cu=INR`;
+};
 </script>
 </body>
 </html>
