@@ -121,7 +121,7 @@ let confirmationResult;
 
 // LOAD PRODUCTS
 async function loadProducts(){
-const snap=await getDocs(collection(db,"products"));
+const snap = await getDocs(collection(db,"products"));
 allProducts=[];
 snap.forEach(d=>allProducts.push(d.data()));
 render(allProducts);
@@ -145,66 +145,73 @@ productList.innerHTML+=`
 }
 
 // CART
-window.addToCart=p=>{
-cart.push(p); alert("Added to cart");
-}
-window.openCart=()=>{
-cartBox.style.display="block";
-cartItems.innerHTML="";
-let t=0;
-cart.forEach(p=>{cartItems.innerHTML+=`<p>${p.name} - ₹${p.price}</p>`; t+=Number(p.price);});
-total.innerText=t;
+window.addToCart = p => { cart.push(p); alert("Added to cart"); }
+window.openCart = () => {
+cartBox.style.display = "block";
+cartItems.innerHTML = "";
+let t = 0;
+cart.forEach(p => { cartItems.innerHTML += `<p>${p.name} - ₹${p.price}</p>`; t += Number(p.price); });
+total.innerText = t;
 }
 
 // BUY FLOW
-window.buyNow=p=>{
-currentProduct = p; // store clicked product
-loginBox.style.display="block";
-}
-window.checkout=()=>loginBox.style.display="block";
+window.buyNow = p => { currentProduct = p; loginBox.style.display="block"; }
+window.checkout = () => loginBox.style.display="block";
 
-// OTP
-window.sendOTP=async()=>{
+// OTP LOGIN
+window.sendOTP = async () => {
 if(uphone.value.length!==10) return alert("Invalid phone");
 confirmationResult = await signInWithPhoneNumber(auth,"+91"+uphone.value,window.recaptchaVerifier);
-otp.style.display="block"; verifyBtn.style.display="block";
-alert("OTP Sent");
+otp.style.display="block"; verifyBtn.style.display="block"; alert("OTP Sent");
 }
-window.verifyOTP=async()=>{
+window.verifyOTP = async () => {
 await confirmationResult.confirm(otp.value);
 loginBox.style.display="none";
 addressBox.style.display="block";
-aname.value = uphone.value;
 }
 
 // ADDRESS + PAYMENT
-window.payNow=()=>{
+window.payNow = () => {
 if(!aname.value||!address.value||!pincode.value) return alert("Fill all fields");
 let amt = currentProduct.price;
 window.location.href=`upi://pay?pa=9354189671-1@naviaxis&pn=AGERA&am=${amt}&cu=INR`;
 }
 
 // FILTER
-window.filterProducts=()=>{
-let q=search.value.toLowerCase();
+window.filterProducts = () => {
+let q = search.value.toLowerCase();
 render(allProducts.filter(p=>p.name.toLowerCase().includes(q)));
 }
-window.setFilter=c=>{
+window.setFilter = c => {
 render(c==="all"?allProducts:allProducts.filter(p=>p.category===c));
 }
 
 // ADMIN ADD PRODUCT
-window.addProduct=()=>{
-const reader=new FileReader();
-reader.onload=async e=>{
+window.addProduct = async () => {
+const productName = document.getElementById('name').value;
+const productPrice = document.getElementById('price').value;
+const productSize = document.getElementById('size').value;
+const productCategory = document.getElementById('category').value;
+const productImg = document.getElementById('img').files[0];
+
+if(!productName||!productPrice||!productSize||!productCategory||!productImg) return alert("Fill all fields");
+
+const reader = new FileReader();
+reader.onload = async (e) => {
+try {
 await addDoc(collection(db,"products"),{
-name:name.value, price:price.value, size:size.value,
-category:category.value, image:e.target.result
+name: productName,
+price: productPrice,
+size: productSize,
+category: productCategory,
+image: e.target.result
 });
-panel.style.display="none";
+alert("Product added successfully");
+document.getElementById('panel').style.display="none";
 loadProducts();
+} catch(err) { console.error(err); alert("Error adding product"); }
 }
-reader.readAsDataURL(img.files[0]);
+reader.readAsDataURL(productImg);
 }
 
 // INITIAL LOAD
