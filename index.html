@@ -6,47 +6,49 @@
 <title>AG ERA</title>
 <style>
 body{font-family:Arial;margin:0;background:#f5f5f5}
-header{background:black;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center}
-.header-left{display:flex;gap:15px;align-items:center}
-.header-left h2{margin:0}
-.header-left input{padding:8px;border-radius:5px;border:none;width:200px}
-.nav-links{display:flex;gap:20px}
-.nav-links a{color:white;text-decoration:none;font-weight:bold}
+header{background:black;color:white;padding:15px;display:flex;align-items:center;justify-content:space-between}
+.header-left{display:flex;gap:15px;align-items:center;}
+.header-left h2{margin:0;}
+nav{display:flex;justify-content:center;gap:20px;background:#1a1a1a;padding:10px}
+nav a{color:white;text-decoration:none;font-weight:bold}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:30px}
 .card{background:white;padding:15px;border-radius:10px;text-align:center;box-shadow:0 4px 8px rgba(0,0,0,0.1)}
 .card img{width:100%;height:220px;object-fit:cover;border-radius:5px}
 .actions{display:flex;gap:8px;justify-content:center;margin-top:10px}
-.actions button{padding:8px;border:none;border-radius:5px;font-weight:bold;cursor:pointer}
+.actions button{padding:8px;border:none;border-radius:5px;font-weight:bold}
 .cart{background:black;color:white}
 .buy{background:orange}
 .popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;width:90%;max-width:400px;box-shadow:0 0 20px rgba(0,0,0,.5)}
 input,select,button{width:100%;padding:10px;margin:8px 0}
-.admin{position:fixed;bottom:20px;right:20px;padding:15px;border-radius:50%;background:black;color:white;cursor:pointer}
 #panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border:2px solid #000;max-width:400px;box-shadow:0 0 20px rgba(0,0,0,.5)}
-.menu{position:fixed;top:15px;left:15px;background:white;padding:10px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,.3)}
-.menu button{width:100%;margin:5px 0;padding:8px;cursor:pointer}
+.top-left-menu{position:fixed;top:15px;left:15px;background:white;padding:10px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:5px;z-index:1000}
+.top-left-menu button{width:120px;font-size:14px;padding:5px;}
 </style>
 </head>
 <body>
 
 <header>
-<div class="header-left">
-<h2>AG ERA</h2>
-<input id="search" placeholder="Search" onkeyup="filterProducts()">
-</div>
-<div class="nav-links">
-<a href="#" onclick="openCart()">Cart 🛒</a>
-</div>
+  <div class="header-left">
+    <h2>AG ERA</h2>
+  </div>
+  <input id="search" placeholder="Search" onkeyup="filterProducts()">
 </header>
 
-<!-- Top-left menu -->
-<div class="menu" id="menuBox">
-<button onclick="showMyOrders()">My Orders</button>
-<button onclick="showAccount()">Account</button>
-<button onclick="alert('Settings coming soon')">Settings</button>
-</div>
+<nav>
+<a href="#" onclick="setFilter('all')">Home</a>
+<a href="#" onclick="setFilter('Men')">Men</a>
+<a href="#" onclick="setFilter('Women')">Women</a>
+<a href="#" onclick="openCart()">Cart 🛒</a>
+</nav>
 
 <div class="products" id="productList"></div>
+
+<!-- TOP LEFT MENU -->
+<div class="top-left-menu">
+<button onclick="toggleOrders()">My Orders</button>
+<button onclick="toggleAccount()">My Account</button>
+<button onclick="toggleSettings()">Settings</button>
+</div>
 
 <!-- CART -->
 <div class="popup" id="cartBox">
@@ -63,6 +65,7 @@ input,select,button{width:100%;padding:10px;margin:8px 0}
 <input id="uphone" placeholder="10 digit phone">
 <div id="recaptcha-container"></div>
 <button onclick="sendOTP()">Send OTP</button>
+
 <input id="otp" placeholder="Enter OTP" style="display:none">
 <button onclick="verifyOTP()" id="verifyBtn" style="display:none">Verify</button>
 </div>
@@ -83,8 +86,8 @@ input,select,button{width:100%;padding:10px;margin:8px 0}
 <button onclick="ordersBox.style.display='none'">Close</button>
 </div>
 
-<!-- ADMIN -->
-<button class="admin" onclick="panel.style.display='block'">🔒</button>
+<!-- ADMIN PANEL -->
+<button style="position:fixed;bottom:15px;right:15px;padding:15px;background:black;color:white;border-radius:50%;" onclick="panel.style.display='block'">🔒</button>
 <div id="panel">
 <h3>Owner Dashboard</h3>
 <select id="category"><option>Men</option><option>Women</option></select>
@@ -92,13 +95,14 @@ input,select,button{width:100%;padding:10px;margin:8px 0}
 <input id="price" placeholder="Price">
 <select id="size"><option>S</option><option>M</option><option>L</option><option>XL</option></select>
 <input type="file" id="img">
-<button onclick="addProduct()">Add Product</button>
+<button id="addProductBtn">Add Product</button>
+<p id="addStatus" style="color:green;"></p>
 <button onclick="panel.style.display='none'">Close</button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const app = initializeApp({
@@ -106,20 +110,21 @@ apiKey:"AIzaSyAh6-HK90YwIjWI5lAXJ7fUd2kP0o-33d4",
 authDomain:"aryan-8efc1.firebaseapp.com",
 projectId:"aryan-8efc1"
 });
+
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let allProducts=[], cart=[], currentUserPhone="";
+let allProducts=[], cart=[], currentUser=null;
 
-/* OTP Recaptcha */
+/* RECAPTCHA */
 window.recaptchaVerifier = new RecaptchaVerifier("recaptcha-container",{size:"normal"},auth);
 let confirmationResult;
 
-/* Load Products */
+/* LOAD PRODUCTS */
 async function loadProducts(){
-const snap = await getDocs(collection(db,"products"));
-allProducts = [];
-snap.forEach(d=>allProducts.push({...d.data(),id:d.id}));
+const snap=await getDocs(collection(db,"products"));
+allProducts=[];
+snap.forEach(d=>allProducts.push(d.data()));
 render(allProducts);
 }
 
@@ -141,15 +146,18 @@ productList.innerHTML+=`
 }
 
 /* CART */
-window.addToCart=p=>{cart.push(p);alert("Added")}
+window.addToCart=p=>{cart.push(p);alert("Added");}
 window.openCart=()=>{
 cartBox.style.display="block";
 cartItems.innerHTML="";
 let t=0;
-cart.forEach(p=>{cartItems.innerHTML+=`<p>${p.name} - ₹${p.price}</p>`; t+=Number(p.price)});
+cart.forEach(p=>{
+cartItems.innerHTML+=`<p>${p.name} - ₹${p.price}</p>`;
+t+=Number(p.price);
+});
 total.innerText=t;
 }
-window.buyNow=p=>{cart=[p];openCart()}
+window.buyNow=p=>{cart=[p];openCart();}
 window.checkout=()=>loginBox.style.display="block";
 
 /* OTP */
@@ -157,69 +165,94 @@ window.sendOTP=async()=>{
 if(uphone.value.length!==10) return alert("Invalid phone");
 confirmationResult = await signInWithPhoneNumber(auth,"+91"+uphone.value,window.recaptchaVerifier);
 otp.style.display="block"; verifyBtn.style.display="block";
-alert("OTP Sent"); currentUserPhone=uphone.value;
+alert("OTP Sent");
 }
 window.verifyOTP=async()=>{
 await confirmationResult.confirm(otp.value);
-loginBox.style.display="none"; addressBox.style.display="block";
+currentUser={phone:uphone.value};
+loginBox.style.display="none";
+addressBox.style.display="block";
 }
 
-/* Payment & Save Order */
+/* PAYMENT */
 window.payNow=async()=>{
 if(!address.value||!pincode.value||!aname.value) return alert("Fill address");
-let amt=total.innerText;
-let orderData = {
-user: currentUserPhone,
-name: aname.value,
-address: address.value,
-pincode: pincode.value,
-items: [...cart],
-total: amt,
-status: "Paid",
-timestamp: new Date()
-};
-await addDoc(collection(db,"orders"),orderData);
-addressBox.style.display="none"; cartBox.style.display="none"; cart=[];
-window.location.href=`upi://pay?pa=9354189671-1@naviaxis&pn=AGERA&am=${amt}&cu=INR`;
-alert("Order Placed Successfully! Check My Orders.");
+let amt=0;
+cart.forEach(p=>amt+=Number(p.price));
 
-/* Update My Orders real-time */
+for(let p of cart){
+await addDoc(collection(db,"orders"),{
+product:p.name,
+price:p.price,
+size:p.size,
+category:p.category,
+user:currentUser.phone,
+status:"Paid",
+address:address.value,
+name:aname.value,
+pincode:pincode.value,
+timestamp:new Date()
+});
 }
 
-/* Admin Add Product */
-window.addProduct=()=>{
-const r=new FileReader();
-r.onload=async e=>{
-await addDoc(collection(db,"products"),{
-name:name.value,price:price.value,size:size.value,category:category.value,image:e.target.result
-});
-panel.style.display="none";
+alert("Payment done successfully!");
+cart=[];
+addressBox.style.display="none";
 loadProducts();
 }
-r.readAsDataURL(img.files[0]);
-}
 
-/* Filter */
-window.filterProducts=()=>{let q=search.value.toLowerCase(); render(allProducts.filter(p=>p.name.toLowerCase().includes(q)))}
-window.setFilter=c=>{render(c==="all"?allProducts:allProducts.filter(p=>p.category===c))}
-
-/* My Orders */
-function showMyOrders(){
-ordersBox.style.display="block"; ordersList.innerHTML="";
-const q = query(collection(db,"orders"), orderBy("timestamp","desc"));
-onSnapshot(q, snap=>{
+/* MY ORDERS */
+function toggleOrders(){
+ordersBox.style.display = ordersBox.style.display==="block"?"none":"block";
+const q = query(collection(db,"orders"),orderBy("timestamp","desc"));
+onSnapshot(q,snap=>{
 ordersList.innerHTML="";
 snap.forEach(d=>{
-let o = d.data();
-if(o.user===currentUserPhone){
-ordersList.innerHTML+=`<p>${o.items.map(i=>i.name).join(", ")} - ₹${o.total} [${o.status}]</p>`;
-}
-})
-})
+const od=d.data();
+if(od.user===currentUser?.phone)
+ordersList.innerHTML+=`<p>${od.product} - ₹${od.price} - ${od.status}</p>`;
+});
+});
 }
 
-/* Account info */
-function showAccount(){alert("Logged in as: "+currentUserPhone)}
+/* ACCOUNT MENU */
+function toggleAccount(){
+if(currentUser) alert(`Logged in as: ${currentUser.phone}`);
+else alert("Not logged in");
+}
+function toggleSettings(){ alert("Settings coming soon"); }
+
+/* FILTER */
+window.filterProducts=()=>{ let q=search.value.toLowerCase(); render(allProducts.filter(p=>p.name.toLowerCase().includes(q))); }
+window.setFilter=c=>{ render(c==="all"?allProducts:allProducts.filter(p=>p.category===c)); }
+
+/* ADMIN PANEL PRODUCT ADD */
+const addProductBtn = document.getElementById("addProductBtn");
+const addStatus = document.getElementById("addStatus");
+
+addProductBtn.addEventListener("click", async () => {
+const productName = document.getElementById("name").value;
+const productPrice = document.getElementById("price").value;
+const productSize = document.getElementById("size").value;
+const productCategory = document.getElementById("category").value;
+const productImg = document.getElementById("img").files[0];
+
+if(!productName||!productPrice||!productSize||!productCategory||!productImg){ alert("Fill all fields"); return; }
+
+const reader = new FileReader();
+reader.onload = async (e)=>{
+try{
+await addDoc(collection(db,"products"),{
+name:productName,price:productPrice,size:productSize,
+category:productCategory,image:e.target.result
+});
+addStatus.innerText="Product added successfully!";
+panel.style.display="none";
+loadProducts();
+}catch(err){ console.error(err); addStatus.innerText="Error adding product"; }
+};
+reader.readAsDataURL(productImg);
+});
 
 loadProducts();
 </script>
